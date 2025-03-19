@@ -1,6 +1,10 @@
 import random
 import datetime
-from termcolor import colored  # termcolor를 임포트
+from rich.console import Console
+from rich.text import Text
+
+# 콘솔 객체 생성
+console = Console()
 
 def get_daily_fortune(initials):
     # 오늘 날짜를 가져옵니다
@@ -70,22 +74,42 @@ def get_daily_fortune(initials):
     lucky_color = lucky_colors[index % len(lucky_colors)]  # 색깔도 날짜와 이니셜에 맞춰 고르게
     lucky_number = lucky_numbers[index % len(lucky_numbers)]  # 숫자도 날짜와 이니셜에 맞춰 고르게
 
-    # termcolor에서 지원되지 않는 색상 처리
-    supported_colors = ["red", "green", "yellow", "blue", "magenta", "cyan", "white", "grey", "black"]
-    if lucky_color not in supported_colors:
-        lucky_color = "white"  # 지원되지 않는 색상은 기본 색상으로 처리
+    # 24비트 색상으로 대응하는 색상
+    rich_colors = {
+        "red": "red",
+        "green": "green",
+        "yellow": "yellow",
+        "blue": "blue",
+        "magenta": "magenta",
+        "cyan": "cyan",
+        "white": "white",
+        "black": "black",
+        "grey": "white",
+        "pink": "magenta",
+        "brown": "yellow",
+        "skyblue": "blue",
+        "lightgreen": "green",
+        "turquoise": "cyan",
+        "purple": "magenta",
+        "peach": "yellow",
+        "orange": "yellow",
+        "lavender": "magenta"
+    }
 
     # 한글로 변환된 색상
     lucky_color_korean = color_translation.get(lucky_color, "흰색")
 
-    # 행운의 색깔을 적용한 운세 출력
-    colored_fortune = colored(fortune, lucky_color)
-    colored_lucky_color = colored(f"Lucky color: {lucky_color_korean}", lucky_color)
+    # rich 라이브러리에서 사용할 색상으로 설정
+    colored_fortune = Text(fortune, style=rich_colors.get(lucky_color, "white"))
+    colored_lucky_color = Text(f"행운의 색깔: {lucky_color_korean}", style=rich_colors.get(lucky_color, "white"))
 
-    return f"{today}의 운세: {colored_fortune}\n{colored_lucky_color}\n행운의 숫자: {lucky_number}"
+    # 출력
+    console.print(f"{today}의 운세: {colored_fortune}")
+    console.print(colored_lucky_color)
+    console.print(f"행운의 숫자: {lucky_number}")
 
 # 이름의 이니셜 입력 받기
 initials = input("이름의 이니셜을 입력하세요: ").strip()
 
 # 운세 출력
-print(get_daily_fortune(initials))
+get_daily_fortune(initials)
